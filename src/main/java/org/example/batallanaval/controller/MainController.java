@@ -48,7 +48,7 @@ public class MainController {
     }
 
     private void openGameScene(ActionEvent event, GameState state, boolean revealMachine) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/batallanaval/fxml/game.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/batallanaval/styles/game.fxml"));
         AnchorPane root = loader.load();
         GameController controller = loader.getController();
         controller.initState(state, revealMachine);

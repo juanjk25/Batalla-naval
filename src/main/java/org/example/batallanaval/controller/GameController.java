@@ -158,7 +158,7 @@ public class GameController {
     @FXML
     protected void onBack() throws IOException {
         // volver a main
-        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/org/example/batallanaval/fxml/main.fxml"));
+        javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/org/example/batallanaval/styles/main.fxml"));
         javafx.scene.layout.AnchorPane root = loader.load();
         Stage stage = (Stage) btnBack.getScene().getWindow();
         Scene scene = new Scene(root);

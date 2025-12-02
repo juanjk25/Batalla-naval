@@ -7,31 +7,28 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.batallanaval.controller.MainController"
             prefWidth="900" prefHeight="600"
-            styleClass="root">
+            style="-fx-background-color: #0f1720;">
 
     <children>
-        <VBox spacing="20" alignment="CENTER"
+        <VBox alignment="CENTER" spacing="20"
               AnchorPane.topAnchor="20"
-              AnchorPane.bottomAnchor="20"
               AnchorPane.leftAnchor="20"
-              AnchorPane.rightAnchor="20">
+              AnchorPane.rightAnchor="20"
+              AnchorPane.bottomAnchor="20">
 
-            <Label text="BATALLA NAVAL" styleClass="title"/>
+            <Label text="BATALLA NAVAL"
+                   style="-fx-font-size: 36; -fx-text-fill: white;"/>
 
             <HBox spacing="10" alignment="CENTER">
-                <Label text="Nickname:"/>
+                <Label text="Nickname:" style="-fx-text-fill: white;"/>
                 <TextField fx:id="nicknameField" promptText="Tu nombre..."/>
             </HBox>
 
-            <HBox spacing="15" alignment="CENTER">
-                <Button text="Nuevo Juego" onAction="#onNewGame" styleClass="btn-primary"/>
+            <HBox spacing="15">
+                <Button text="Nuevo Juego" onAction="#onNewGame"/>
                 <Button text="Continuar" onAction="#onContinue"/>
                 <Button text="Ver tablero máquina" onAction="#onShowMachineBoard"/>
             </HBox>
-
-            <Region prefHeight="20"/>
-
-            <Label text="Interfaz moderna (Opción B)" styleClass="muted"/>
 
         </VBox>
     </children>
