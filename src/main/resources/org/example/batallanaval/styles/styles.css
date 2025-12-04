@@ -1,4 +1,9 @@
 .root {
+    -fx-background-image: url("fondo.jpg");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
     -fx-font-family: "Segoe UI", Arial;
     -fx-background-color: linear-gradient(#0f1720, #10243a);
     -fx-padding: 20;
@@ -40,17 +45,20 @@
 
 .ship {
     -fx-fill: linear-gradient(#7dd3fc, #0284c7);
-    -fx-arc-width: 6; -fx-arc-height:6;
+    -fx-arc-width: 6;
+    -fx-arc-height:6;
 }
 
 .ship-hit {
     -fx-fill: linear-gradient(#fbbf24,#f97316);
-    -fx-arc-width: 6; -fx-arc-height:6;
+    -fx-arc-width: 6;
+    -fx-arc-height:6;
 }
 
 .ship-sunk {
     -fx-fill: linear-gradient(#ef4444,#b91c1c);
-    -fx-arc-width: 6; -fx-arc-height:6;
+    -fx-arc-width: 6;
+    -fx-arc-height:6;
 }
 
 .miss-label {
@@ -71,4 +79,16 @@
     -fx-padding: 6 0 6 0;
 }
 
-.bold { -fx-font-weight: bold; -fx-text-fill: white; }
+.bold {
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* Fondo para tableros */
+.board-background {
+    -fx-background-image: url("tablero.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: stretch;
+    -fx-background-position: center;
+    -fx-opacity: 0.25; /* Ajusta la transparencia aquí */
+}

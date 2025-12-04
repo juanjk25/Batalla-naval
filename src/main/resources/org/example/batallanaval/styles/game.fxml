@@ -10,28 +10,33 @@
             style="-fx-background-color: #10243a;">
 
     <children>
+
         <HBox spacing="20"
               AnchorPane.topAnchor="10"
               AnchorPane.leftAnchor="10"
               AnchorPane.rightAnchor="10"
               AnchorPane.bottomAnchor="10">
 
-            <!-- PANEL IZQUIERDO: TABLEROS -->
-            <VBox spacing="10" prefWidth="750">
+            <!-- PANEL IZQUIERDO: TABLEROS UNO AL LADO DEL OTRO -->
+            <HBox spacing="40" prefWidth="750">
 
-                <Label text="Tu Tablero"
-                       style="-fx-text-fill: white; -fx-font-size: 18;"/>
+                <!-- TU TABLERO -->
+                <VBox spacing="10">
+                    <Label text="Tu Tablero"
+                           style="-fx-text-fill: white; -fx-font-size: 18;"/>
+                    <GridPane fx:id="playerGrid" hgap="4" vgap="4" styleClass="board-background"/>
+                </VBox>
 
-                <GridPane fx:id="playerGrid" hgap="4" vgap="4"/>
+                <!-- TABLERO ENEMIGO -->
+                <VBox spacing="10">
+                    <Label text="Tablero Enemigo"
+                           style="-fx-text-fill: white; -fx-font-size: 18;"/>
+                    <GridPane fx:id="machineGrid" hgap="4" vgap="4" styleClass="board-background"/>
+                </VBox>
 
-                <Label text="Tablero Enemigo"
-                       style="-fx-text-fill: white; -fx-font-size: 18;"/>
+            </HBox>
 
-                <GridPane fx:id="machineGrid" hgap="4" vgap="4"/>
-
-            </VBox>
-
-            <!-- PANEL DERECHO -->
+            <!-- PANEL DERECHO (INFO DEL JUGADOR) -->
             <VBox spacing="15" prefWidth="300">
 
                 <HBox spacing="10">
@@ -54,5 +59,7 @@
             </VBox>
 
         </HBox>
+
     </children>
+
 </AnchorPane>

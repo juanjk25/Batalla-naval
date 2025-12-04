@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.example.batallanaval.model.GameState;
@@ -21,7 +22,7 @@ public class MainController {
     protected void onNewGame(ActionEvent event) throws IOException {
         String nick = nicknameField.getText().isBlank() ? "Jugador" : nicknameField.getText().trim();
         GameState state = GameState.newGame(nick);
-        SaveManager.saveState(state); // guarda inicial
+        SaveManager.saveState(state);
         openGameScene(event, state);
     }
 
@@ -29,7 +30,6 @@ public class MainController {
     protected void onContinue(ActionEvent event) throws IOException, ClassNotFoundException {
         GameState state = SaveManager.loadLastState();
         if(state == null) {
-            // si no hay guardado, iniciar nuevo
             state = GameState.newGame("Jugador");
         }
         openGameScene(event, state);
@@ -39,7 +39,6 @@ public class MainController {
     protected void onShowMachineBoard(ActionEvent event) throws IOException, ClassNotFoundException {
         GameState state = SaveManager.loadLastState();
         if(state == null) state = GameState.newGame("Verificador");
-        // pasar a pantalla de juego pero con bandera que muestre tablero enemigo completo
         openGameScene(event, state, true);
     }
 
@@ -52,9 +51,21 @@ public class MainController {
         AnchorPane root = loader.load();
         GameController controller = loader.getController();
         controller.initState(state, revealMachine);
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/org/example/batallanaval/styles/styles.css").toExternalForm());
+
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scene);
+
+        // ----------- 👇 Pantalla completa -----------
+        stage.setFullScreenExitHint(""); // Oculta mensaje de "Presione ESC..."
+        stage.setFullScreen(true);       // Entra en modo pantalla completa
+
+        // OPCIONAL: Si quieres bloquear ESC para evitar salir
+        // stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        // ----------------------------------------------
+
+        stage.show();
     }
 }
