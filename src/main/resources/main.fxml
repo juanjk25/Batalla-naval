@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.batalla_naval_re.controller.MainController"
+            prefWidth="900" prefHeight="600"
+            style="-fx-background-color: #0f1720;">
+
+    <children>
+        <VBox alignment="CENTER" spacing="20"
+              AnchorPane.topAnchor="20"
+              AnchorPane.leftAnchor="20"
+              AnchorPane.rightAnchor="20"
+              AnchorPane.bottomAnchor="20">
+
+            <Label text="BATALLA NAVAL"
+                   style="-fx-font-size: 36; -fx-text-fill: white;"/>
+
+            <HBox spacing="10" alignment="CENTER">
+                <Label text="Nickname:" style="-fx-text-fill: white;"/>
+                <TextField fx:id="nicknameField" promptText="Tu nombre..."/>
+            </HBox>
+
+            <HBox spacing="15">
+                <Button text="Nuevo Juego" onAction="#onNewGame"/>
+                <Button text="Continuar" onAction="#onContinue"/>
+                <Button text="Ver tablero máquina" onAction="#onShowMachineBoard"/>
+            </HBox>
+
+        </VBox>
+    </children>
+</AnchorPane>

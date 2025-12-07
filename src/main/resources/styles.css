@@ -1,0 +1,98 @@
+.root {
+    -fx-background-image: url("fondo.jpg");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+
+    -fx-font-family: "Segoe UI", Arial;
+    -fx-background-color: linear-gradient(#0f1720, #10243a);
+    -fx-padding: 20;
+}
+
+.title {
+    -fx-font-size: 36px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.muted {
+    -fx-text-fill: #cbd5e1;
+}
+
+.btn-primary {
+    -fx-background-color: linear-gradient(#1f6feb, #1553c7);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Boards */
+.board-grid {
+    -fx-hgap: 4;
+    -fx-vgap: 4;
+    -fx-padding: 10;
+    -fx-background-color: rgba(255,255,255,0.03);
+    -fx-border-color: rgba(255,255,255,0.08);
+    -fx-border-radius: 8;
+    -fx-padding: 12;
+}
+
+/* Celdas individuales - MEJORADO */
+.cell-rect {
+    -fx-fill: white; /* Fondo blanco para cada celda */
+    -fx-arc-width: 6;
+    -fx-arc-height: 6;
+    -fx-stroke: #94a3b8; /* Borde gris para definir las celdas */
+    -fx-stroke-width: 1.5;
+}
+
+.ship {
+    -fx-fill: linear-gradient(#7dd3fc, #0284c7);
+    -fx-arc-width: 6;
+    -fx-arc-height:6;
+}
+
+.ship-hit {
+    -fx-fill: linear-gradient(#fbbf24,#f97316);
+    -fx-arc-width: 6;
+    -fx-arc-height:6;
+}
+
+.ship-sunk {
+    -fx-fill: linear-gradient(#ef4444,#b91c1c);
+    -fx-arc-width: 6;
+    -fx-arc-height:6;
+}
+
+.miss-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.side-panel {
+    -fx-background-color: rgba(255,255,255,0.03);
+    -fx-padding: 12;
+    -fx-border-radius: 8;
+    -fx-padding: 16;
+}
+
+.panel-title {
+    -fx-text-fill: #cfe8ff;
+    -fx-font-weight: bold;
+    -fx-padding: 6 0 6 0;
+}
+
+.bold {
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* Fondo para tableros - MEJORADO */
+.board-background {
+    -fx-background-color: white; /* Fondo blanco sólido */
+    -fx-padding: 10;
+    -fx-border-color: #3b82f6;
+    -fx-border-width: 3;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
