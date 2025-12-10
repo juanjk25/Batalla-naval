@@ -9,13 +9,16 @@ import javafx.scene.shape.Rectangle;
 import org.example.batalla_naval_re.model.Cell;
 import org.example.batalla_naval_re.model.Ship;
 
-public class SubmarineShape implements IShipShape {
+public class SubmarineShape extends ShipShape implements IShipShape {
 
     @Override
     public Node createShape(Ship ship, Cell cell) {
         Group group = new Group();
+
         Color shipColor = getShipColor(cell);
-        int position = ship.getCellPosition(cell);
+
+        // 🚨 Cambio clave: ya no usamos ship.getCellPosition
+        int position = getPositionInShip(ship, cell);
 
         if (ship.isHorizontal()) {
             createHorizontalSubmarine(group, shipColor, position);
@@ -27,19 +30,17 @@ public class SubmarineShape implements IShipShape {
     }
 
     private void createHorizontalSubmarine(Group group, Color color, int position) {
-        // Cuerpo ovalado
-        Ellipse hull = new Ellipse(15, 8);
+        Ellipse hull = new Ellipse(18, 9);
         hull.setFill(color);
 
-        // Torre
-        Rectangle tower = new Rectangle(8, 10);
+        Rectangle tower = new Rectangle(10, 12);
         tower.setFill(color.darker());
-        tower.setTranslateY(-8);
+        tower.setTranslateY(-10);
 
-        // Periscopio (solo en celda central)
+        // Periscopio sólo en el centro
         if (position == 1) {
-            Circle periscope = new Circle(3, Color.RED);
-            periscope.setTranslateY(-12);
+            Circle periscope = new Circle(4, Color.BLACK);
+            periscope.setTranslateY(-18);
             group.getChildren().add(periscope);
         }
 
@@ -47,23 +48,24 @@ public class SubmarineShape implements IShipShape {
     }
 
     private void createVerticalSubmarine(Group group, Color color, int position) {
-        Ellipse hull = new Ellipse(8, 15);
+        Ellipse hull = new Ellipse(9, 18);
         hull.setFill(color);
 
-        Rectangle tower = new Rectangle(10, 8);
+        Rectangle tower = new Rectangle(12, 10);
         tower.setFill(color.darker());
-        tower.setTranslateX(-8);
+        tower.setTranslateX(-10);
 
         if (position == 1) {
-            Circle periscope = new Circle(3, Color.RED);
-            periscope.setTranslateX(-12);
+            Circle periscope = new Circle(4, Color.BLACK);
+            periscope.setTranslateX(-18);
             group.getChildren().add(periscope);
         }
 
         group.getChildren().addAll(hull, tower);
     }
 
-    private Color getShipColor(Cell cell) {
+    @Override
+    protected Color getShipColor(Cell cell) {
         if (cell.isSunkPart()) return Color.DARKRED;
         if (cell.isHit()) return Color.ORANGERED;
         return Color.DARKSLATEGRAY;

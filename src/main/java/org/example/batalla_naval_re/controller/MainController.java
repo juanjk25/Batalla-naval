@@ -49,17 +49,13 @@ public class MainController {
         try {
             GameState state = SaveManager.loadLastState();
             if(state == null) state = GameState.newGame("Verificador");
-            openGameScene(event, state, true);
+            openGameScene(event, state); // Quitamos el parámetro boolean
         } catch (Exception e) {
             showError("Error al mostrar tablero de la máquina", e);
         }
     }
 
     private void openGameScene(ActionEvent event, GameState state) throws IOException {
-        openGameScene(event, state, false);
-    }
-
-    private void openGameScene(ActionEvent event, GameState state, boolean revealMachine) throws IOException {
         // Buscar el archivo FXML en resources
         URL fxmlUrl = findResource("game.fxml");
         if (fxmlUrl == null) {
@@ -69,8 +65,9 @@ public class MainController {
         // Cargar la interfaz
         FXMLLoader loader = new FXMLLoader(fxmlUrl);
         AnchorPane root = loader.load();
+        // Llamada CORRECTA a initState
         GameController controller = loader.getController();
-        controller.initState(state, revealMachine);
+        controller.initState(state);
 
         // Crear escena
         Scene scene = new Scene(root);
@@ -89,17 +86,13 @@ public class MainController {
         stage.show();
     }
 
-    /**
-     * Método auxiliar para buscar recursos en el classpath
-     */
     private URL findResource(String filename) {
-        // Intentar diferentes ubicaciones comunes
         String[] possiblePaths = {
-                "/" + filename,           // Raíz de resources
-                "/vista/" + filename,     // En carpeta vista
-                "/fxml/" + filename,      // En carpeta fxml
-                "/view/" + filename,      // En carpeta view
-                filename                  // Ruta relativa
+                "/" + filename,
+                "/vista/" + filename,
+                "/fxml/" + filename,
+                "/view/" + filename,
+                filename
         };
 
         for (String path : possiblePaths) {
@@ -114,9 +107,6 @@ public class MainController {
         return null;
     }
 
-    /**
-     * Método para mostrar errores al usuario
-     */
     private void showError(String title, Exception e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");

@@ -7,36 +7,33 @@ import javafx.scene.shape.Rectangle;
 import org.example.batalla_naval_re.model.Cell;
 import org.example.batalla_naval_re.model.Ship;
 
-public class CarrierShape implements IShipShape {
+public class CarrierShape extends ShipShape implements IShipShape {
 
     @Override
     public Node createShape(Ship ship, Cell cell) {
         Group group = new Group();
 
-        // Determinar color según estado
         Color shipColor = getShipColor(cell);
-        int position = ship.getCellPosition(cell);
+
+        // 🚨 Cambio clave:
+        int position = getPositionInShip(ship, cell);
 
         if (ship.isHorizontal()) {
-            // Carrier horizontal (4 celdas)
             createHorizontalCarrier(group, shipColor, position);
         } else {
-            // Carrier vertical
             createVerticalCarrier(group, shipColor, position);
         }
 
-        addEffects(group, cell);
         return group;
     }
 
     private void createHorizontalCarrier(Group group, Color color, int position) {
-        // Casco principal
         Rectangle hull = new Rectangle(35, 12);
         hull.setFill(color);
         hull.setArcWidth(8);
         hull.setArcHeight(8);
 
-        // Cubierta de vuelo (en posiciones centrales)
+        // Cubierta central
         if (position == 1 || position == 2) {
             Rectangle deck = new Rectangle(25, 6);
             deck.setFill(color.brighter());
@@ -44,9 +41,9 @@ public class CarrierShape implements IShipShape {
             group.getChildren().add(deck);
         }
 
-        // Torre de control (en posición media)
+        // Torre comando
         if (position == 1) {
-            Rectangle tower = new Rectangle(8, 15);
+            Rectangle tower = new Rectangle(9, 15);
             tower.setFill(color.darker());
             tower.setTranslateY(-12);
             group.getChildren().add(tower);
@@ -78,13 +75,10 @@ public class CarrierShape implements IShipShape {
         group.getChildren().add(hull);
     }
 
-    private Color getShipColor(Cell cell) {
+    @Override
+    protected Color getShipColor(Cell cell) {
         if (cell.isSunkPart()) return Color.DARKRED;
         if (cell.isHit()) return Color.ORANGERED;
         return Color.DARKGRAY;
-    }
-
-    private void addEffects(Group group, Cell cell) {
-        // Puedes añadir efectos aquí si lo necesitas
     }
 }

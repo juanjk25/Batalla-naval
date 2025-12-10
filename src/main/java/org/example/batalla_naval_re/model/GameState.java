@@ -16,22 +16,46 @@ public class GameState implements Serializable {
         this.machineBoard = machineBoard;
     }
 
+    /**
+     * Crea un nuevo juego.
+     * - Los barcos del jugador NO se colocan automáticamente.
+     * - La máquina sí coloca sus barcos automáticamente.
+     */
     public static GameState newGame(String nickname) {
         Player p = new Player(nickname);
+        // Crear barcos vacíos para que el jugador los coloque manualmente
+        p.getBoard().createShipsWithoutPlacement();
+
         Board machine = new Board();
-        // Place player's ships randomly (could add placement UI later). For now: both random.
-        p.getBoard().randomPlaceAllShips();
+        // Colocar automáticamente los barcos de la máquina
         machine.randomPlaceAllShips();
+
         return new GameState(p, machine);
     }
 
-    public Player getPlayer() { return player; }
-    public Board getMachineBoard() { return machineBoard; }
-    public boolean isGameOver() { return gameOver; }
-    public void setGameOver(boolean gameOver) { this.gameOver = gameOver; }
-    public Optional<Player> getMachine() { return Optional.empty(); }
+    // Getters y setters
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Board getMachineBoard() {
+        return machineBoard;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    public Optional<Player> getMachine() {
+        return Optional.empty();
+    }
+
     public AtomicInteger getMachineSunkCount() {
-        if (machineSunkCount==null) machineSunkCount = new AtomicInteger(0);
+        if (machineSunkCount == null) machineSunkCount = new AtomicInteger(0);
         return machineSunkCount;
     }
 }
