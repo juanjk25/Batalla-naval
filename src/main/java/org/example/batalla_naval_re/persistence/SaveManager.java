@@ -34,6 +34,15 @@ public class SaveManager {
     }
 
     /**
+     * Alias necesario para GameController.
+     * Llama a loadLastState().
+     */
+    public static GameState loadState() throws GameFileException {
+        return loadLastState();
+    }
+
+
+    /**
      * Carga el último estado guardado del juego.
      *
      * @return el GameState cargado o null si no existe guardado previo

@@ -1,45 +1,52 @@
 package org.example.batalla_naval_re.view.shapes;
 
-import org.example.batalla_naval_re.model.ShipType;
+import javafx.scene.Node;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import org.example.batalla_naval_re.model.Cell;
 import org.example.batalla_naval_re.model.Ship;
+import org.example.batalla_naval_re.model.ShipType;
 
+/**
+ * Fábrica de figuras para representar cada parte de un barco en el tablero.
+ */
 public class ShipShapeFactory {
 
-    public static IShipShape createShape(ShipType shipType) {
-        if (shipType == null) {
-            throw new IllegalArgumentException("ShipType cannot be null");
+    /**
+     * Devuelve una figura 2D para representar UNA parte del barco (una celda).
+     * El GameController coloca 1 figura por celda ocupada.
+     */
+    public static Node createShipNode(Ship ship, Cell cell) {
+
+        Rectangle rect = new Rectangle(38, 38); // tamaño interno de celda
+
+        // Colores base por tipo de barco (solo estilo visual)
+        Color base;
+        switch (ship.getType()) {
+            case CARRIER -> base = Color.DARKSLATEGRAY;
+            case SUBMARINE -> base = Color.DARKCYAN;
+            case DESTROYER -> base = Color.DARKMAGENTA;
+            case FRIGATE -> base = Color.DARKOLIVEGREEN;
+            default -> base = Color.GRAY;
         }
 
-        switch (shipType) {
-            case CARRIER:
-                return new CarrierShape();
-            case SUBMARINE:
-                return new SubmarineShape();
-            case DESTROYER:
-                return new DestroyerShape();
-            case FRIGATE:
-                return new FrigateShape();
-            default:
-                // Figura por defecto (rectángulo simple) como fallback
-                return createDefaultShape();
+        // Cambia color según estado
+        if (cell.isSunkPart()) {
+            rect.setFill(Color.DARKRED);
+        } else if (cell.isHit()) {
+            rect.setFill(Color.ORANGE);
+        } else {
+            rect.setFill(base);
         }
+
+        rect.setArcWidth(8);
+        rect.setArcHeight(8);
+        rect.setStroke(Color.BLACK);
+
+        return rect;
     }
 
-    private static IShipShape createDefaultShape() {
-        return new IShipShape() {
-            @Override
-            public javafx.scene.Node createShape(Ship ship, Cell cell) {
-                javafx.scene.shape.Rectangle rect = new javafx.scene.shape.Rectangle(30, 30);
-                if (cell.isSunkPart()) {
-                    rect.setFill(javafx.scene.paint.Color.DARKRED);
-                } else if (cell.isHit()) {
-                    rect.setFill(javafx.scene.paint.Color.ORANGE);
-                } else {
-                    rect.setFill(javafx.scene.paint.Color.GRAY);
-                }
-                return rect;
-            }
-        };
+    public static IShipShape createShape(ShipType type) {
+        return null;
     }
 }
