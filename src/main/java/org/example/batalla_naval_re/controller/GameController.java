@@ -2,8 +2,6 @@ package org.example.batalla_naval_re.controller;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,8 +15,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+
 import org.example.batalla_naval_re.ai.SimpleAI;
 import org.example.batalla_naval_re.model.*;
+import org.example.batalla_naval_re.persistence.SaveManager;
+import org.example.batalla_naval_re.persistence.GameFileException;
+import org.example.batalla_naval_re.persistence.StatsManager;
 
 import java.io.IOException;
 
@@ -30,6 +32,8 @@ public class GameController {
     @FXML private Label lblStatus;
     @FXML private Label lblSunkCount;
     @FXML private Button btnBack;
+    @FXML private Button btnSave;
+    @FXML private Button btnLoad;
 
     private GameState state;
     private SimpleAI ai;
@@ -37,6 +41,9 @@ public class GameController {
     private Ship selectedShip;
     private boolean horizontalPlacement = true;
 
+    // ------------------------------------------------------
+    // INICIALIZACIÓN
+    // ------------------------------------------------------
     public void initState(GameState state) {
         this.state = state;
         this.ai = new SimpleAI(state.getMachineBoard());
@@ -54,6 +61,9 @@ public class GameController {
         enableBoardInteraction();
     }
 
+    // ------------------------------------------------------
+    // RENDERIZAR TABLEROS
+    // ------------------------------------------------------
     private void renderBoards() {
         playerGrid.getChildren().clear();
         machineGrid.getChildren().clear();
@@ -71,7 +81,6 @@ public class GameController {
         StackPane pane = createBaseCell();
 
         if (cell.isShip()) showShipIcon(pane, cell.getShip());
-
         if (cell.isHit()) drawHit(pane);
         if (cell.isSunkPart()) drawSunk(pane);
         if (cell.isMiss()) drawMiss(pane);
@@ -100,8 +109,6 @@ public class GameController {
             onPlayerShot(row, col);
         });
 
-        // No mostramos iconos de los barcos aquí
-        // Solo el disparo
         if (cell.isHit()) drawHit(pane);
         if (cell.isSunkPart()) drawSunk(pane);
         if (cell.isMiss()) drawMiss(pane);
@@ -121,33 +128,38 @@ public class GameController {
         return pane;
     }
 
-    // ----------------------------------------
-    // ICONOS RESTAURADOS
-    // ----------------------------------------
+    // ------------------------------------------------------
+    // ICONOS DE LOS BARCOS
+    // ------------------------------------------------------
     private void showShipIcon(StackPane pane, Ship ship) {
-        String path = ship.getType().getImagePath(); // ya lo tienes en tu enum
-        Image img = new Image(getClass().getResourceAsStream(path));
-        ImageView iv = new ImageView(img);
-        iv.setFitWidth(40);
-        iv.setFitHeight(40);
+        try {
+            String path = ship.getType().getImagePath();
+            Image img = new Image(getClass().getResourceAsStream(path));
+            ImageView iv = new ImageView(img);
+            iv.setFitWidth(40);
+            iv.setFitHeight(40);
+            pane.getChildren().add(iv);
 
-        pane.getChildren().add(iv);
+        } catch (Exception e) {
+            System.out.println("No se pudo cargar icono de barco: " + e.getMessage());
+        }
     }
 
-    // ----------------------------------------
-    // DISPAROS VISUALES
-    // ----------------------------------------
+    // ------------------------------------------------------
+    // EFECTOS VISUALES
+    // ------------------------------------------------------
     private void drawHit(StackPane pane) {
         Circle c = new Circle(10, Color.RED);
-        c.setOpacity(0.85);
         pane.getChildren().add(c);
     }
 
     private void drawMiss(StackPane pane) {
         Line l1 = new Line(5, 5, 35, 35);
         Line l2 = new Line(35, 5, 5, 35);
-        l1.setStroke(Color.BLUE); l2.setStroke(Color.BLUE);
-        l1.setStrokeWidth(2); l2.setStrokeWidth(2);
+        l1.setStroke(Color.BLUE);
+        l2.setStroke(Color.BLUE);
+        l1.setStrokeWidth(2);
+        l2.setStrokeWidth(2);
         pane.getChildren().addAll(l1, l2);
     }
 
@@ -158,7 +170,7 @@ public class GameController {
     }
 
     // ------------------------------------------------------
-    // COLOCACIÓN
+    // COLOCACIÓN DE BARCOS
     // ------------------------------------------------------
     private void enableBoardInteraction() {
         for (Ship ship : state.getPlayer().getBoard().getShips()) {
@@ -184,7 +196,7 @@ public class GameController {
         selectedShip = null;
 
         if (state.getPlayer().getBoard().allShipsPlaced()) {
-            lblStatus.setText("Listo. Dispara al tablero enemigo.");
+            lblStatus.setText("Listo. Dispara al enemigo.");
             machineGrid.setDisable(false);
         } else {
             enableBoardInteraction();
@@ -194,10 +206,9 @@ public class GameController {
     }
 
     // ------------------------------------------------------
-    // DISPAROS AL ENEMIGO
+    // DISPARO DEL JUGADOR
     // ------------------------------------------------------
     private void onPlayerShot(int r, int c) {
-
         if (!state.getPlayer().getBoard().allShipsPlaced()) {
             lblStatus.setText("Primero coloca todos tus barcos.");
             return;
@@ -222,19 +233,23 @@ public class GameController {
         checkEndGame();
     }
 
+    // ------------------------------------------------------
+    // TURNO DE LA IA
+    // ------------------------------------------------------
     private void aiTurn() {
         Platform.runLater(() -> {
             boolean again;
-            do {
-                int[] shot = ai.nextShot();
-                Cell.ShotResult result = state.getPlayer().getBoard().shoot(shot[0], shot[1]);
 
+            do {
+                int[] s = ai.nextShot();
+                Cell.ShotResult result = state.getPlayer().getBoard().shoot(s[0], s[1]);
                 again = (result == Cell.ShotResult.HIT);
 
                 if (state.getPlayer().getBoard().allShipsSunk()) {
                     lblStatus.setText("La máquina ganó.");
                     break;
                 }
+
             } while (again);
 
             renderBoards();
@@ -247,6 +262,55 @@ public class GameController {
         }
     }
 
+    // ------------------------------------------------------
+    // GUARDAR PARTIDA
+    // ------------------------------------------------------
+    @FXML
+    private void onSaveGame() {
+        try {
+            SaveManager.saveState(state);
+
+            StatsManager.saveStats(
+                    state.getPlayer().getName(),
+                    Integer.parseInt(String.valueOf(state.getPlayer().getSunkCount()))
+            );
+
+            lblStatus.setText("💾 Partida guardada.");
+
+        } catch (GameFileException e) {
+            lblStatus.setText("❌ Error al guardar.");
+        }
+    }
+
+    // ------------------------------------------------------
+    // CARGAR PARTIDA
+    // ------------------------------------------------------
+    @FXML
+    private void onLoadGame() {
+        try {
+            GameState loaded = SaveManager.loadLastState();
+
+            if (loaded == null) {
+                lblStatus.setText("📂 No hay partida guardada.");
+                return;
+            }
+
+            state = loaded;
+            renderBoards();
+
+            lblNickname.setText(state.getPlayer().getName());
+            lblSunkCount.setText(String.valueOf(state.getPlayer().getSunkCount()));
+
+            lblStatus.setText("✔ Partida cargada.");
+
+        } catch (GameFileException e) {
+            lblStatus.setText("❌ Error al cargar.");
+        }
+    }
+
+    // ------------------------------------------------------
+    // VOLVER AL MENÚ
+    // ------------------------------------------------------
     @FXML
     protected void onBack() throws IOException {
         Stage stage = (Stage) btnBack.getScene().getWindow();

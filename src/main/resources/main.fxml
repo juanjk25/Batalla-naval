@@ -2,34 +2,66 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.batalla_naval_re.controller.MainController"
-            prefWidth="900" prefHeight="600"
-            style="-fx-background-color: #0f1720;">
+            prefWidth="900" prefHeight="600">
 
     <children>
-        <VBox alignment="CENTER" spacing="20"
+
+        <!-- Imagen de fondo -->
+        <ImageView fitWidth="900" fitHeight="600" preserveRatio="false">
+            <image>
+                <Image url="@fondo.jpg"/>
+            </image>
+        </ImageView>
+
+        <!-- Contenedor principal encima de la imagen -->
+        <VBox alignment="CENTER" spacing="25"
               AnchorPane.topAnchor="20"
               AnchorPane.leftAnchor="20"
               AnchorPane.rightAnchor="20"
-              AnchorPane.bottomAnchor="20">
+              AnchorPane.bottomAnchor="20"
+              style="-fx-background-color: rgba(0,0,0,0.5); -fx-background-radius: 15; -fx-padding: 30;">
 
             <Label text="BATALLA NAVAL"
-                   style="-fx-font-size: 36; -fx-text-fill: white;"/>
+                   style="-fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: white;"/>
 
-            <HBox spacing="10" alignment="CENTER">
-                <Label text="Nickname:" style="-fx-text-fill: white;"/>
-                <TextField fx:id="nicknameField" promptText="Tu nombre..."/>
+            <!-- Nickname -->
+            <HBox spacing="15" alignment="CENTER">
+                <Label text="Nickname:"
+                       style="-fx-font-size: 20px; -fx-text-fill: #e0e0e0;"/>
+
+                <TextField fx:id="nicknameField" promptText="Tu nombre..."
+                           style="-fx-background-radius: 8; -fx-font-size: 16px; -fx-padding: 5 10;"/>
             </HBox>
 
-            <HBox spacing="15">
-                <Button text="Nuevo Juego" onAction="#onNewGame"/>
-                <Button text="Continuar" onAction="#onContinue"/>
-                <Button text="Ver tablero máquina" onAction="#onShowMachineBoard"/>
+            <!-- Botones -->
+            <HBox spacing="20" alignment="CENTER">
+
+                <Button text="Nuevo Juego"
+                        onAction="#onNewGame"
+                        style="-fx-background-color: #0ea5e9; -fx-background-radius: 10;
+                               -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-padding: 10 20;"/>
+
+                <Button text="Continuar"
+                        onAction="#onContinue"
+                        style="-fx-background-color: #22c55e; -fx-background-radius: 10;
+                               -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-padding: 10 20;"/>
+
+                <Button text="Ver Tablero Máquina"
+                        onAction="#onShowMachineBoard"
+                        style="-fx-background-color: #f97316; -fx-background-radius: 10;
+                               -fx-text-fill: white; -fx-font-weight: bold;
+                               -fx-padding: 10 20;"/>
             </HBox>
 
         </VBox>
+
     </children>
+
 </AnchorPane>
