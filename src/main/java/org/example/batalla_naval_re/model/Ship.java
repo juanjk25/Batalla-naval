@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Ship implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private final ShipType type;
@@ -26,14 +27,15 @@ public class Ship implements Serializable {
         }
     }
 
-    /** 🔥 Nuevo: Notificación correcta al barco cuando recibe impacto */
+    // ✅ El barco recibe impacto SOLO desde Cell
     public void notifyHit(Cell hitCell) {
-        if (!cells.contains(hitCell)) return;
+        if (!cells.contains(hitCell) || hitCell.isHit()) return;
 
         hitCell.setHit(true);
 
-        boolean allHit = cells.stream().allMatch(Cell::isHit);
-        if (allHit) markAsSunk();
+        if (cells.stream().allMatch(Cell::isHit)) {
+            markAsSunk();
+        }
     }
 
     private void markAsSunk() {
@@ -51,14 +53,6 @@ public class Ship implements Serializable {
         return type;
     }
 
-    public List<Cell> getCells() {
-        return new ArrayList<>(cells);
-    }
-
-    public boolean isHorizontal() {
-        return isHorizontal;
-    }
-
     public int getSize() {
         return type.getSize();
     }
@@ -67,26 +61,16 @@ public class Ship implements Serializable {
         return type.getDisplayName();
     }
 
-    public void setHorizontal(boolean horizontal) {
-        this.isHorizontal = horizontal;
+    public List<Cell> getCells() {
+        return new ArrayList<>(cells);
     }
 
-    /** ✔ Lo que hacía mal antes: evitar superposición y tocar bordes */
-    public boolean canPlaceAt(Board board, int startRow, int startCol, boolean horizontal) {
-        int size = getSize();
+    public boolean isHorizontal() {
+        return isHorizontal;
+    }
 
-        for (int i = 0; i < size; i++) {
-            int row = horizontal ? startRow : startRow + i;
-            int col = horizontal ? startCol + i : startCol;
-
-            if (!board.isValidPosition(row, col)) return false;
-
-            if (board.getCell(row, col).isShip()) return false;
-
-            // Evita que queden pegados (regla oficial)
-            if (!board.isCellFreeForShipPlacement(row, col)) return false;
-        }
-        return true;
+    public void setHorizontal(boolean horizontal) {
+        this.isHorizontal = horizontal;
     }
 
     public boolean placeAt(Board board, int startRow, int startCol, boolean horizontal) {
@@ -99,14 +83,20 @@ public class Ship implements Serializable {
             int row = horizontal ? startRow : startRow + i;
             int col = horizontal ? startCol + i : startCol;
 
-            Cell cell = board.getCell(row, col);
-            addCell(cell);
+            addCell(board.getCell(row, col));
         }
         return true;
     }
 
-    @Override
-    public String toString() {
-        return "%s [%d celdas]".formatted(getName(), getSize());
+    public boolean canPlaceAt(Board board, int startRow, int startCol, boolean horizontal) {
+        for (int i = 0; i < getSize(); i++) {
+            int row = horizontal ? startRow : startRow + i;
+            int col = horizontal ? startCol + i : startCol;
+
+            if (!board.isValidPosition(row, col)) return false;
+            if (board.getCell(row, col).isShip()) return false;
+            if (!board.isCellFreeForShipPlacement(row, col)) return false;
+        }
+        return true;
     }
 }

@@ -9,7 +9,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import org.example.batalla_naval_re.ai.SimpleAI;
@@ -25,9 +26,11 @@ public class GameController {
 
     @FXML private GridPane playerGrid;
     @FXML private GridPane machineGrid;
+
     @FXML private Label lblNickname;
     @FXML private Label lblStatus;
     @FXML private Label lblSunkCount;
+
     @FXML private Button btnBack;
     @FXML private Button btnSave;
     @FXML private Button btnLoad;
@@ -38,6 +41,12 @@ public class GameController {
     private Ship selectedShip;
     private boolean horizontalPlacement = true;
 
+    // ✅ Iconos
+    private final Image hitImage =
+            new Image(getClass().getResourceAsStream("/impacto.jpg"));
+    private final Image sunkImage =
+            new Image(getClass().getResourceAsStream("/undido.jpg"));
+
     // ------------------------------------------------------
     // INIT
     // ------------------------------------------------------
@@ -46,13 +55,13 @@ public class GameController {
         this.ai = new SimpleAI(state.getMachineBoard());
 
         lblNickname.setText(state.getPlayer().getName());
-        lblStatus.setText("Arrastra y coloca tus barcos. Click derecho = rotar.");
+        lblStatus.setText("Coloca tus barcos | Click derecho = rotar");
         lblSunkCount.setText("0");
-
-        machineGrid.setDisable(true);
 
         state.getMachineBoard().randomPlaceAllShips();
         state.getPlayer().getBoard().createShipsWithoutPlacement();
+
+        machineGrid.setDisable(true);
 
         renderBoards();
         enableShipSelection();
@@ -65,11 +74,32 @@ public class GameController {
         playerGrid.getChildren().clear();
         machineGrid.getChildren().clear();
 
+        drawHeaders(playerGrid);
+        drawHeaders(machineGrid);
+
         for (int r = 0; r < Board.SIZE; r++) {
             for (int c = 0; c < Board.SIZE; c++) {
-                playerGrid.add(createPlayerCell(r, c), c, r);
-                machineGrid.add(createMachineCell(r, c), c, r);
+                playerGrid.add(createPlayerCell(r, c), c + 1, r + 1);
+                machineGrid.add(createMachineCell(r, c), c + 1, r + 1);
             }
+        }
+    }
+
+    // ------------------------------------------------------
+    // HEADERS A–J / 1–10
+    // ------------------------------------------------------
+    private void drawHeaders(GridPane grid) {
+
+        for (int c = 0; c < Board.SIZE; c++) {
+            Label lbl = new Label(String.valueOf((char) ('A' + c)));
+            lbl.setStyle("-fx-font-weight: bold;");
+            grid.add(lbl, c + 1, 0);
+        }
+
+        for (int r = 0; r < Board.SIZE; r++) {
+            Label lbl = new Label(String.valueOf(r + 1));
+            lbl.setStyle("-fx-font-weight: bold;");
+            grid.add(lbl, 0, r + 1);
         }
     }
 
@@ -81,9 +111,7 @@ public class GameController {
         StackPane pane = baseCell();
 
         if (cell.isShip()) showShipIcon(pane, cell.getShip());
-        if (cell.isHit()) drawHit(pane);
-        if (cell.isSunkPart()) drawSunk(pane);
-        if (cell.isMiss()) drawMiss(pane);
+        paintCellState(pane, cell);
 
         pane.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.SECONDARY) {
@@ -109,11 +137,17 @@ public class GameController {
             }
         });
 
-        if (cell.isHit()) drawHit(pane);
-        if (cell.isSunkPart()) drawSunk(pane);
-        if (cell.isMiss()) drawMiss(pane);
-
+        paintCellState(pane, cell);
         return pane;
+    }
+
+    // ------------------------------------------------------
+    // CELL PAINT
+    // ------------------------------------------------------
+    private void paintCellState(StackPane pane, Cell cell) {
+        if (cell.isSunkPart()) drawSunkIcon(pane);
+        else if (cell.isHit()) drawHitIcon(pane);
+        else if (cell.isMiss()) drawMiss(pane);
     }
 
     private StackPane baseCell() {
@@ -129,15 +163,26 @@ public class GameController {
     // ICONS
     // ------------------------------------------------------
     private void showShipIcon(StackPane pane, Ship ship) {
-        Image img = new Image(getClass().getResourceAsStream(ship.getType().getImagePath()));
+        Image img = new Image(getClass().getResourceAsStream(
+                ship.getType().getImagePath()));
         ImageView iv = new ImageView(img);
         iv.setFitWidth(40);
         iv.setFitHeight(40);
         pane.getChildren().add(iv);
     }
 
-    private void drawHit(StackPane pane) {
-        pane.getChildren().add(new Circle(10, Color.RED));
+    private void drawHitIcon(StackPane pane) {
+        ImageView iv = new ImageView(hitImage);
+        iv.setFitWidth(28);
+        iv.setFitHeight(28);
+        pane.getChildren().add(iv);
+    }
+
+    private void drawSunkIcon(StackPane pane) {
+        ImageView iv = new ImageView(sunkImage);
+        iv.setFitWidth(40);
+        iv.setFitHeight(40);
+        pane.getChildren().add(iv);
     }
 
     private void drawMiss(StackPane pane) {
@@ -148,14 +193,8 @@ public class GameController {
         pane.getChildren().addAll(l1, l2);
     }
 
-    private void drawSunk(StackPane pane) {
-        Rectangle r = new Rectangle(40, 40, Color.DARKRED);
-        r.setOpacity(0.7);
-        pane.getChildren().add(r);
-    }
-
     // ------------------------------------------------------
-    // SHIP SELECTION
+    // GAME LOGIC
     // ------------------------------------------------------
     private void enableShipSelection() {
         for (Ship s : state.getPlayer().getBoard().getShips()) {
@@ -167,62 +206,48 @@ public class GameController {
     }
 
     private void attemptPlaceShip(int row, int col) {
-        if (state.getPlayer().getBoard().addShip(selectedShip, row, col, horizontalPlacement)) {
+        if (state.getPlayer().getBoard()
+                .addShip(selectedShip, row, col, horizontalPlacement)) {
+
             selectedShip = null;
             enableShipSelection();
 
             if (state.getPlayer().getBoard().allShipsPlaced()) {
                 machineGrid.setDisable(false);
             }
-
             renderBoards();
         }
     }
 
-    // ------------------------------------------------------
-    // PLAYER SHOT
-    // ------------------------------------------------------
     private void onPlayerShot(int row, int col) {
         Cell.ShotResult result = state.getMachineBoard().shoot(row, col);
         renderBoards();
-
-        if (result == Cell.ShotResult.MISS) {
-            aiTurnThread();
-        }
+        if (result == Cell.ShotResult.MISS) aiTurnThread();
     }
 
-    // ======================================================
-    // 🧵 HILO 1 → IA
-    // ======================================================
+    // ------------------------------------------------------
+    // THREADS
+    // ------------------------------------------------------
     private void aiTurnThread() {
-        Thread aiThread = new Thread(() -> {
-            try {
-                Thread.sleep(800); // Simula pensar
-            } catch (InterruptedException ignored) {}
-
+        Thread t = new Thread(() -> {
+            try { Thread.sleep(700); } catch (InterruptedException ignored) {}
             int[] pos = ai.nextShot();
             state.getPlayer().getBoard().shoot(pos[0], pos[1]);
-
             Platform.runLater(this::renderBoards);
         });
-
-        aiThread.setDaemon(true);
-        aiThread.start();
+        t.setDaemon(true);
+        t.start();
     }
 
-    // ======================================================
-    // 🧵 HILO 2 → AUTOSAVE
-    // ======================================================
     private void autoSaveThread() {
-        Thread saveThread = new Thread(() -> {
+        Thread t = new Thread(() -> {
             try {
                 Thread.sleep(5000);
                 SaveManager.saveState(state);
             } catch (Exception ignored) {}
         });
-
-        saveThread.setDaemon(true);
-        saveThread.start();
+        t.setDaemon(true);
+        t.start();
     }
 
     // ------------------------------------------------------
@@ -250,7 +275,8 @@ public class GameController {
     private void onBack() throws IOException {
         Stage stage = (Stage) btnBack.getScene().getWindow();
         stage.setScene(new Scene(
-                javafx.fxml.FXMLLoader.load(getClass().getResource("/main.fxml"))
+                javafx.fxml.FXMLLoader.load(getClass()
+                        .getResource("/main.fxml"))
         ));
     }
 }
