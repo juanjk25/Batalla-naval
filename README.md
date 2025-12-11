@@ -3,6 +3,7 @@
 Batalla Naval es un juego de estrategia clásico desarrollado en Java con JavaFX, donde un jugador humano compite contra una inteligencia artificial. 
 El objetivo es hundir la flota enemiga antes de que el oponente hunda la tuya. Cada jugador dispone de una flota de 10 barcos de distintos tamaños, posicionados 
 estratégicamente en tableros de 10x10. El juego incluye interfaz gráfica interactiva, guardado automático, turnos dinámicos y un sistema de inteligencia artificial básico.
+
 ---
 
 ## 🚀 Tecnologías utilizadas
