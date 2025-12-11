@@ -64,7 +64,7 @@ src/main/java/org/example/batalla_naval_re/
 │   └── url/
 ├──  view/
 │   └── renderer/
-│   |   ├── BoardRenderer.java
+│   │   ├── BoardRenderer.java
 │   └── shapes/
 │       ├── CarrierShape.java
 │       ├── DestroyerShape.java
