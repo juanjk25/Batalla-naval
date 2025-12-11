@@ -96,7 +96,7 @@ src/main/java/org/example/batalla_naval_re/
    Correo: jarrison.caicedo@correounivalle.edu.co
 
 4. Nombre: Hugo Alexander Eraso   
-   GitHub: ningagamer1
+   GitHub: ningagamer1   
    Correo: hugo.eraso@correounivalle.edu.co
 
 
