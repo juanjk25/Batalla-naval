@@ -48,7 +48,7 @@ src/main/java/org/example/batalla_naval_re/
 ├── controller/            # Controladores
 │   ├── GameController.java
 │   ├── IGameController.java
-|   ├── IMainController.java
+│   ├── IMainController.java
 │   └── MainController.java
 ├── exception/             # Excepciones personalizadas
 │   └── PlacementException.java
@@ -63,16 +63,16 @@ src/main/java/org/example/batalla_naval_re/
 ├── persistence/           # Persistencia de datos
 │   └── url/
 ├──  view/
-|   └── renderer/
-|   |   ├── BoardRenderer.java
-|   └── shapes/
-|       ├── CarrierShape.java
-|       ├── DestroyerShape.java
-|       ├── FrigateShape.java
-|       ├── IShipShape.java
-|       ├── ShipShape.java
-|       ├── ShipShapeFactory.java
-|       └── SubmarineShape.java
+│   └── renderer/
+│   |   ├── BoardRenderer.java
+│   └── shapes/
+│       ├── CarrierShape.java
+│       ├── DestroyerShape.java
+│       ├── FrigateShape.java
+│       ├── IShipShape.java
+│       ├── ShipShape.java
+│       ├── ShipShapeFactory.java
+│       └── SubmarineShape.java
 └── resources (imágenes, estilos, archivos FXML)
 
 ```
