@@ -22,6 +22,14 @@ import java.io.IOException;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+/**
+ * Controlador principal de la vista del juego (game.fxml).
+ * <p>
+ * Gestiona la lógica de interacción entre el usuario y el modelo de datos durante la partida.
+ * Se encarga de renderizar los tableros, gestionar la fase de colocación de barcos,
+ * coordinar los turnos de disparo (Jugador vs IA) y manejar la persistencia del juego.
+ * </p>
+ */
 public class GameController {
 
     @FXML private GridPane playerGrid;
@@ -35,10 +43,24 @@ public class GameController {
     @FXML private Button btnSave;
     @FXML private Button btnLoad;
 
+    /**
+     * Estado actual del juego que contiene a los jugadores y tableros.
+     */
     private GameState state;
+
+    /**
+     * Instancia de la Inteligencia Artificial simple para el oponente.
+     */
     private SimpleAI ai;
 
+    /**
+     * Barco actualmente seleccionado para ser colocado en el tablero.
+     */
     private Ship selectedShip;
+
+    /**
+     * Define la orientación de colocación del barco (true = horizontal, false = vertical).
+     */
     private boolean horizontalPlacement = true;
 
     // ✅ Iconos
@@ -50,6 +72,16 @@ public class GameController {
     // ------------------------------------------------------
     // INIT
     // ------------------------------------------------------
+
+    /**
+     * Inicializa el estado del juego recibido desde el controlador principal.
+     * <p>
+     * Configura la IA, actualiza las etiquetas de la interfaz, posiciona aleatoriamente
+     * los barcos de la máquina y prepara el tablero del jugador para la fase de colocación.
+     * </p>
+     *
+     * @param state El objeto {@link GameState} que contiene la información de la partida.
+     */
     public void initState(GameState state) {
         this.state = state;
         this.ai = new SimpleAI(state.getMachineBoard());
@@ -70,6 +102,13 @@ public class GameController {
     // ------------------------------------------------------
     // RENDER
     // ------------------------------------------------------
+
+    /**
+     * Limpia y redibuja completamente ambos tableros (Jugador y Máquina).
+     * <p>
+     * Se llama cada vez que ocurre un cambio en el estado del juego (disparo, colocación, carga).
+     * </p>
+     */
     private void renderBoards() {
         playerGrid.getChildren().clear();
         machineGrid.getChildren().clear();
@@ -88,6 +127,12 @@ public class GameController {
     // ------------------------------------------------------
     // HEADERS A–J / 1–10
     // ------------------------------------------------------
+
+    /**
+     * Dibuja los encabezados de filas (1-10) y columnas (A-J) en el grid dado.
+     *
+     * @param grid El {@link GridPane} donde se añadirán las etiquetas.
+     */
     private void drawHeaders(GridPane grid) {
 
         for (int c = 0; c < Board.SIZE; c++) {
@@ -106,6 +151,21 @@ public class GameController {
     // ------------------------------------------------------
     // PLAYER CELL
     // ------------------------------------------------------
+
+    /**
+     * Crea la representación visual de una celda en el tablero del jugador.
+     * <p>
+     * Configura los eventos del mouse para la fase de colocación:
+     * <ul>
+     *     <li>Clic derecho: Rota la orientación del barco.</li>
+     *     <li>Clic izquierdo: Intenta colocar el barco seleccionado.</li>
+     * </ul>
+     * </p>
+     *
+     * @param row Fila de la celda.
+     * @param col Columna de la celda.
+     * @return Un {@link StackPane} que representa la celda gráfica.
+     */
     private StackPane createPlayerCell(int row, int col) {
         Cell cell = state.getPlayer().getBoard().getCell(row, col);
         StackPane pane = baseCell();
@@ -127,6 +187,17 @@ public class GameController {
     // ------------------------------------------------------
     // MACHINE CELL
     // ------------------------------------------------------
+
+    /**
+     * Crea la representación visual de una celda en el tablero de la máquina.
+     * <p>
+     * Configura el evento de clic izquierdo para realizar un disparo contra el oponente.
+     * </p>
+     *
+     * @param row Fila de la celda.
+     * @param col Columna de la celda.
+     * @return Un {@link StackPane} que representa la celda gráfica.
+     */
     private StackPane createMachineCell(int row, int col) {
         Cell cell = state.getMachineBoard().getCell(row, col);
         StackPane pane = baseCell();
@@ -144,12 +215,23 @@ public class GameController {
     // ------------------------------------------------------
     // CELL PAINT
     // ------------------------------------------------------
+
+    /**
+     * Pinta el estado actual de la celda (Hundido, Impacto o Agua) sobre el panel.
+     *
+     * @param pane El panel gráfico de la celda.
+     * @param cell El objeto lógico de la celda.
+     */
     private void paintCellState(StackPane pane, Cell cell) {
         if (cell.isSunkPart()) drawSunkIcon(pane);
         else if (cell.isHit()) drawHitIcon(pane);
         else if (cell.isMiss()) drawMiss(pane);
     }
 
+    /**
+     * Crea el estilo base (fondo azul) para una celda del tablero.
+     * @return Un nuevo StackPane configurado.
+     */
     private StackPane baseCell() {
         StackPane pane = new StackPane();
         Rectangle r = new Rectangle(40, 40);
@@ -162,6 +244,10 @@ public class GameController {
     // ------------------------------------------------------
     // ICONS
     // ------------------------------------------------------
+
+    /**
+     * Muestra el icono correspondiente al tipo de barco en la celda.
+     */
     private void showShipIcon(StackPane pane, Ship ship) {
         Image img = new Image(getClass().getResourceAsStream(
                 ship.getType().getImagePath()));
@@ -171,6 +257,9 @@ public class GameController {
         pane.getChildren().add(iv);
     }
 
+    /**
+     * Dibuja el icono de "Impacto" (fuego/explosión).
+     */
     private void drawHitIcon(StackPane pane) {
         ImageView iv = new ImageView(hitImage);
         iv.setFitWidth(28);
@@ -178,6 +267,9 @@ public class GameController {
         pane.getChildren().add(iv);
     }
 
+    /**
+     * Dibuja el icono de "Hundido" (calavera o similar).
+     */
     private void drawSunkIcon(StackPane pane) {
         ImageView iv = new ImageView(sunkImage);
         iv.setFitWidth(40);
@@ -185,6 +277,9 @@ public class GameController {
         pane.getChildren().add(iv);
     }
 
+    /**
+     * Dibuja una "X" para representar "Agua" (tiro fallido).
+     */
     private void drawMiss(StackPane pane) {
         Line l1 = new Line(5, 5, 35, 35);
         Line l2 = new Line(35, 5, 5, 35);
@@ -196,6 +291,11 @@ public class GameController {
     // ------------------------------------------------------
     // GAME LOGIC
     // ------------------------------------------------------
+
+    /**
+     * Busca el siguiente barco no colocado en la lista del jugador y lo selecciona.
+     * Si no hay más barcos para colocar, `selectedShip` será null.
+     */
     private void enableShipSelection() {
         for (Ship s : state.getPlayer().getBoard().getShips()) {
             if (s.getCells().isEmpty()) {
@@ -205,6 +305,16 @@ public class GameController {
         }
     }
 
+    /**
+     * Intenta colocar el barco seleccionado actualmente en la posición indicada.
+     * <p>
+     * Si la colocación es exitosa, selecciona el siguiente barco.
+     * Si todos los barcos están colocados, habilita el tablero de la máquina para comenzar el juego.
+     * </p>
+     *
+     * @param row Fila de inicio.
+     * @param col Columna de inicio.
+     */
     private void attemptPlaceShip(int row, int col) {
         if (state.getPlayer().getBoard()
                 .addShip(selectedShip, row, col, horizontalPlacement)) {
@@ -219,6 +329,16 @@ public class GameController {
         }
     }
 
+    /**
+     * Maneja la lógica cuando el jugador hace clic en el tablero enemigo.
+     * <p>
+     * Realiza el disparo y actualiza la vista. Si el jugador falla (Agua),
+     * inicia el turno de la IA en un hilo separado.
+     * </p>
+     *
+     * @param row Fila objetivo.
+     * @param col Columna objetivo.
+     */
     private void onPlayerShot(int row, int col) {
         Cell.ShotResult result = state.getMachineBoard().shoot(row, col);
         renderBoards();
@@ -228,6 +348,13 @@ public class GameController {
     // ------------------------------------------------------
     // THREADS
     // ------------------------------------------------------
+
+    /**
+     * Ejecuta el turno de la IA en un hilo separado (Daemon) para simular tiempo de "pensamiento".
+     * <p>
+     * Espera 700ms, calcula el disparo de la IA y actualiza la UI mediante {@link Platform#runLater}.
+     * </p>
+     */
     private void aiTurnThread() {
         Thread t = new Thread(() -> {
             try { Thread.sleep(700); } catch (InterruptedException ignored) {}
@@ -239,6 +366,9 @@ public class GameController {
         t.start();
     }
 
+    /**
+     * Inicia un hilo de autoguardado que persiste el estado del juego después de 5 segundos.
+     */
     private void autoSaveThread() {
         Thread t = new Thread(() -> {
             try {
@@ -253,12 +383,21 @@ public class GameController {
     // ------------------------------------------------------
     // SAVE / LOAD
     // ------------------------------------------------------
+
+    /**
+     * Manejador del botón "Guardar". Guarda el estado actual y activa el autoguardado.
+     * @throws GameFileException Si ocurre un error al escribir el archivo.
+     */
     @FXML
     private void onSaveGame() throws GameFileException {
         SaveManager.saveState(state);
         autoSaveThread();
     }
 
+    /**
+     * Manejador del botón "Cargar". Restaura el último estado guardado y actualiza la vista.
+     * @throws GameFileException Si ocurre un error al leer el archivo.
+     */
     @FXML
     private void onLoadGame() throws GameFileException {
         GameState loaded = SaveManager.loadLastState();
@@ -271,6 +410,11 @@ public class GameController {
     // ------------------------------------------------------
     // BACK
     // ------------------------------------------------------
+
+    /**
+     * Manejador del botón "Volver". Regresa a la pantalla principal (main.fxml).
+     * @throws IOException Si falla la carga del FXML del menú principal.
+     */
     @FXML
     private void onBack() throws IOException {
         Stage stage = (Stage) btnBack.getScene().getWindow();

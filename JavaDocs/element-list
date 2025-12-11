@@ -1,0 +1,9 @@
+org.example.batalla_naval_re
+org.example.batalla_naval_re.ai
+org.example.batalla_naval_re.controller
+org.example.batalla_naval_re.exceptions
+org.example.batalla_naval_re.model
+org.example.batalla_naval_re.persistence
+org.example.batalla_naval_re.util
+org.example.batalla_naval_re.view.renderer
+org.example.batalla_naval_re.view.shapes
